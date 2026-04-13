@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Flow - Ultimate Kanban</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="ambient-bg">
+      <div class="glow-orb orb-1"></div>
+      <div class="glow-orb orb-2"></div>
+      <div class="noise-overlay"></div>
+    </div>
+
+    <div id="taskModal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content glass-panel">
+        <div class="modal-header">
+          <div>
+            <h2 id="modalTitle">Create Task</h2>
+            <p class="modal-subtitle">Add a new item to your workflow.</p>
+          </div>
+          <button id="closeModalBtn" class="icon-btn">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <form id="taskForm">
+          <input type="hidden" id="taskId" />
+          <div class="form-group">
+            <input
+              type="text"
+              id="taskTitle"
+              class="hero-input"
+              placeholder="Task Title..."
+              required
+            />
+          </div>
+          <div class="form-group">
+            <textarea
+              id="taskDesc"
+              rows="3"
+              placeholder="Add some description..."
+            ></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group custom-select-wrapper">
+              <label for="taskPriority">Priority</label>
+              <select id="taskPriority" required>
+                <option value="low">Low Priority</option>
+                <option value="medium" selected>Medium Priority</option>
+                <option value="high">High Priority</option>
+              </select>
+              <i data-lucide="chevron-down" class="select-icon"></i>
+            </div>
+            <div class="form-group custom-select-wrapper">
+              <label for="taskStatus">Status</label>
+              <select id="taskStatus" required>
+                <option value="todo" selected>To Do</option>
+                <option value="in-progress">In Progress</option>
+                <option value="done">Done</option>
+              </select>
+              <i data-lucide="chevron-down" class="select-icon"></i>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button type="button" id="cancelTaskBtn" class="btn btn-secondary">
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-glow">Save Task</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="app-wrapper">
+      <div class="app-container glass-panel">
+        <aside class="sidebar">
+          <div class="sidebar-header">
+            <div class="logo">
+              <div class="logo-icon"><i data-lucide="layers"></i></div>
+              <span>TaskFlow</span>
+            </div>
+          </div>
+          <nav class="sidebar-nav">
+            <div class="filter-section">
+              <h3>Workflow</h3>
+              <div class="filter-group">
+                <label class="filter-label">
+                  <input type="radio" name="statusFilter" value="all" checked />
+                  <span class="radio-custom"></span>
+                  All Tasks
+                </label>
+                <label class="filter-label">
+                  <input type="radio" name="statusFilter" value="todo" />
+                  <span class="radio-custom"></span>
+                  To Do
+                </label>
+                <label class="filter-label">
+                  <input type="radio" name="statusFilter" value="in-progress" />
+                  <span class="radio-custom"></span>
+                  In Progress
+                </label>
+                <label class="filter-label">
+                  <input type="radio" name="statusFilter" value="done" />
+                  <span class="radio-custom"></span>
+                  Done
+                </label>
+              </div>
+              <h3>Priority</h3>
+              <div class="filter-group">
+                <label class="filter-label">
+                  <input
+                    type="radio"
+                    name="priorityFilter"
+                    value="all"
+                    checked
+                  />
+                  <span class="radio-custom"></span>
+                  All Levels
+                </label>
+                <label class="filter-label">
+                  <input type="radio" name="priorityFilter" value="high" />
+                  <span class="radio-custom priority-high-ring"></span>
+                  High
+                </label>
+                <label class="filter-label">
+                  <input type="radio" name="priorityFilter" value="medium" />
+                  <span class="radio-custom priority-medium-ring"></span>
+                  Medium
+                </label>
+                <label class="filter-label">
+                  <input type="radio" name="priorityFilter" value="low" />
+                  <span class="radio-custom priority-low-ring"></span>
+                  Low
+                </label>
+              </div>
+            </div>
+          </nav>
+          <div class="sidebar-footer">
+            <button
+              id="themeToggleBtn"
+              class="theme-toggle"
+              aria-label="Toggle dark mode"
+            >
+              <div class="toggle-track">
+                <div class="toggle-indicator"></div>
+                <i data-lucide="sun" class="sun-icon"></i>
+                <i data-lucide="moon" class="moon-icon"></i>
+              </div>
+            </button>
+          </div>
+        </aside>
+
+        <main class="main-content">
+          <header class="header">
+            <div class="header-left">
+              <h1 class="board-title">Dashboard</h1>
+            </div>
+            <div class="header-right">
+              <div class="search-bar">
+                <i data-lucide="search" class="search-icon"></i>
+                <input
+                  type="text"
+                  id="searchInput"
+                  placeholder="Search tasks or / to focus"
+                />
+                <div class="shortcut-key">↵ Enter</div>
+              </div>
+              <button id="addTaskBtn" class="btn btn-glow">
+                <i data-lucide="plus"></i>
+                <span>New Task</span>
+              </button>
+            </div>
+          </header>
+          <div class="kanban-wrapper">
+            <div class="kanban-board">
+              <div class="column" data-status="todo">
+                <div class="column-header">
+                  <div class="column-title">
+                    <div class="status-indicator todo-indicator"></div>
+                    <h2>To Do</h2>
+                    <span class="task-count" id="count-todo">0</span>
+                  </div>
+                </div>
+                <div class="task-list" id="todo" data-status="todo"></div>
+              </div>
+              <div class="column" data-status="in-progress">
+                <div class="column-header">
+                  <div class="column-title">
+                    <div class="status-indicator ip-indicator"></div>
+                    <h2>In Progress</h2>
+                    <span class="task-count" id="count-in-progress">0</span>
+                  </div>
+                </div>
+                <div
+                  class="task-list"
+                  id="in-progress"
+                  data-status="in-progress"
+                ></div>
+              </div>
+              <div class="column" data-status="done">
+                <div class="column-header">
+                  <div class="column-title">
+                    <div class="status-indicator done-indicator"></div>
+                    <h2>Done</h2>
+                    <span class="task-count" id="count-done">0</span>
+                  </div>
+                </div>
+                <div class="task-list" id="done" data-status="done"></div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div id="toast" class="toast hidden">
+      <i data-lucide="check-circle" class="toast-icon"></i>
+      <span id="toastMessage"></span>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
